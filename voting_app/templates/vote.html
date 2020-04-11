@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    Голосование - {{ title }}
+{% endblock %}
+
+{% block extended_content %}
+    <div class="container mt-5" style="text-align: center;">
+        <div class="row align-items-center mt-5">
+            <div class="col-sm-9 col-md-7 col-lg-5 mx-auto">
+                <form method="POST">
+                    {% csrf_token %}
+
+                    <div class="form-group">
+                        <p>{{ vote.title }}</p>
+
+                        {% for vote_variant in variants %}
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="option"
+                                       id="radio{{ vote_variant.id }}"
+                                       value="{{ vote_variant.id }}">
+
+                                <label class="form-check-label" for="radio{{ vote_variant.id }}">
+                                    {{ vote_variant.title }}
+                                </label>
+                            </div>
+                        {% endfor %}
+
+                        <button type="submit" class="btn btn-primary mt-3">Проголосовать</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+{% endblock %}

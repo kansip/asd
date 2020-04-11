@@ -1,0 +1,78 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Список Голосований
+{% endblock %}
+
+{% block extended_content %}
+<div class="container mt-5 mb-5">
+    <table class="table table-hover" style="text-align: center">
+        <thead>
+        <tr>
+            <th>#</th>
+            <th>Название голосования</th>
+            <th>Автор голосования</th>
+            <th>Количество лайков</th>
+            <th>Дата начала</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for item in items %}
+        <tr>
+            <td>{{ forloop.counter }}</td>
+
+            <td><a {% if item.is_voted != None and item.is_voted == True %}
+                   style="color: green;" data-toggle="tooltip"
+                   data-placement="top" title=""
+                   data-original-title="Вы уже проголосовали"
+                   {% else %}
+                   href="/vote/{{ item.id }}
+                    {% endif %}">{{ item.title }}</a></td>
+
+            <td><a href="/user/{{ item.user.id }}">{{ item.user.username }}</a></td>
+            <td>{{ item.liked }}</td>
+            <td>{{ item.start_at }}</td>
+            <td>
+                <form method="POST">
+                    <input type="image" width="30px" height="25px" {% if item.is_liked != None and item.is_liked == True %}
+                           onclick="dislike('{{forloop.counter}}')"
+                           src="https://svgsilh.com/svg/35696-ff5722.svg"
+                           {% else %}
+                           onclick="like('{{forloop.counter}}')"
+                           src="https://cdn.onlinewebfonts.com/svg/img_173118.png"
+                           {% endif %}
+                    >
+                    <input type="hidden" name="if_like" id="like{{forloop.counter}}" value="0">
+                    <input type="hidden" name="if_dislike" id="dislike{{forloop.counter}}" value="0">
+                    <input type="hidden" name="vote" value="{{forloop.counter}}">
+                </form>
+            </td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}
+
+{% block extended_js %}
+<script type="text/javascript">
+    $(function () {
+        $('[data-toggle="tooltip"]').tooltip()
+    });
+
+    function dislike(num) {
+        var dis = document.getElementById("dislike" + num);
+        var like = document.getElementById("like" + num);
+        dis.value = "1";
+        like.value = "0";
+    }
+
+    function like(num) {
+        var dis = document.getElementById("dislike" + num);
+        var like = document.getElementById("like" + num);
+        console.log(123);
+        like.value = "1";
+        dis.value = "0";
+    }
+</script>
+{% endblock %}

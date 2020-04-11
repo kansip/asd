@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    Мои Голосования
+{% endblock %}
+
+{% block extended_content %}
+    <div class="container mt-5 mb-5">
+        <table class="table table-hover" style="text-align: center">
+            <thead>
+            <tr>
+                <th>#</th>
+                <th>Название голосования</th>
+                <th>Ваш голос</th>
+                <th>Дата</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for item in items %}
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td>{{ item.vote_variant.vote.title }}</td>
+                    <td>{{ item.vote_variant.title }}</td>
+                    <td>{{ item.created_at }}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endblock %}

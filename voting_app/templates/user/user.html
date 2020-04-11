@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    Мои Голосования
+{% endblock %}
+
+{% block extended_content %}
+    <div id="container" class="container mt-5 mb-5">
+        <div class="card">
+            <div class="card-header" style="background-color: rgba(0, 0, 0, 0);">
+                <div class="row align-items-center" style="justify-content: center;">
+                    <div class="col-auto">
+                        <figure class="figure text-center">
+                            <img width="150px" height="150px"
+                                 src={{image}}
+                                 class="rounded-circle">
+
+                            <figcaption style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                                <h1 style="margin-top: 10px; margin-bottom: 0; white-space: nowrap; font-size: 2rem; font-weight: 400;">
+                                    <span>{{ user.username }}</span></h1>
+
+                                <h2 style="margin:2px; font-size: .85714286em;"><span>Пользователь</span><br></h2>
+
+                            </figcaption>
+                        </figure>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card-body">
+                <h5 class="card-title">Основная информация</h5>
+
+                <table class="table" style="margin-left: 0.25rem">
+                    <tbody>
+                    <tr>
+                        <td style="border: none;">E-Mail</td>
+                        <td class="aligned" style="border: none;">{% if user.email != "" %}
+                            {{ user.email }} {% else %} Не привязан {% endif %}</td>
+                    </tr>
+                    <tr>
+                        <td>Дата регистрации</td>
+                        <td class="aligned">{{ user.date_joined }}</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+{% endblock %}

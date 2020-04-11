@@ -1,0 +1,431 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    Список Голосований
+{% endblock %}
+
+{% block extended_content %}
+    <div class="modal fade" id="add-new-vote-modal" tabindex="-1" role="dialog"
+         aria-labelledby="add-new-vote-modal-label"
+         aria-hidden="true">
+
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="add-new-vote-modal-label">Создание нового голосования</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+
+                <div class="modal-body p-4">
+                    <div id="error" style="text-align: center; display: none">
+                        <p id="error-text" style="color: red">Произошла неизвестная ошибка</p>
+                    </div>
+
+                    <div class="form-group mb-2">
+                        <div class="input-group">
+                            <div class="input-group-prepend">
+                                <div class="input-group-text">
+                                    <i class="fas fa-heading" aria-hidden="true"></i>
+                                </div>
+                            </div>
+
+                            <input id="vote-title" name="vote_title" type="text" class="form-control"
+                                   placeholder="Название голосования">
+                        </div>
+                    </div>
+
+                    <div id="variants">
+                        <div class="form-group mb-2">
+                            <div class="input-group">
+                                <div class="input-group-prepend">
+                                    <div class="input-group-text">
+                                        <i class="fas fa-poll-h" aria-hidden="true"></i>
+                                    </div>
+                                </div>
+
+                                <input name="variants[]" type="text" class="form-control"
+                                       placeholder="Название варианта">
+                            </div>
+                        </div>
+
+                        <div class="form-group mb-2">
+                            <div class="input-group">
+                                <div class="input-group-prepend">
+                                    <div class="input-group-text">
+                                        <i class="fas fa-poll-h" aria-hidden="true"></i>
+                                    </div>
+                                </div>
+
+                                <input name="variants[]" type="text" class="form-control"
+                                       placeholder="Название варианта">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="text-center mt-4">
+                        <button id="add-new-variant" type="button" class="btn btn-primary m-1">
+                            Добавить вариант
+                        </button>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button id="new-vote-cancel" type="button" class="btn btn-secondary" data-dismiss="modal">Отменить
+                    </button>
+                    <button id="new-vote-add" type="button" class="btn btn-primary" onclick="onAddVote()">Создать
+                        опрос
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="edit-vote-modal" tabindex="-1" role="dialog"
+         aria-labelledby="add-new-vote-modal-label"
+         aria-hidden="true">
+
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="edit-vote-modal-label">Редактирование нового голосования</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body p-4">
+                    <div id="edit-error" style="text-align: center; display: none">
+                        <p id="edit-error-text" style="color: red">Произошла неизвестная ошибка</p>
+                    </div>
+
+                    <p class="text-warning" style="text-align: center;">Обратите внимание, что любое редактирование
+                        ведёт к обнулению голосования.</p>
+
+                    <div class="form-group mb-2">
+                        <div class="input-group">
+                            <div class="input-group-prepend">
+                                <div class="input-group-text">
+                                    <i class="fas fa-heading" aria-hidden="true"></i>
+                                </div>
+                            </div>
+
+                            <input id="edit-vote-title" name="vote_title" type="text" class="form-control"
+                                   placeholder="Название голосования">
+                        </div>
+                    </div>
+
+                    <div id="edit-variants">
+                        <div class="form-group mb-2">
+                            <div class="input-group">
+                                <div class="input-group-prepend">
+                                    <div class="input-group-text">
+                                        <i class="fas fa-poll-h" aria-hidden="true"></i>
+                                    </div>
+                                </div>
+
+                                <input id="edit-variant-0-input" name="edit-variants[]" type="text" class="form-control"
+                                       placeholder="Название варианта">
+                            </div>
+                        </div>
+
+                        <div class="form-group mb-2">
+                            <div class="input-group">
+                                <div class="input-group-prepend">
+                                    <div class="input-group-text">
+                                        <i class="fas fa-poll-h" aria-hidden="true"></i>
+                                    </div>
+                                </div>
+
+                                <input id="edit-variant-1-input" name="edit-variants[]" type="text" class="form-control"
+                                       placeholder="Название варианта">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="text-center mt-4">
+                        <button id="edit-add-new-variant" type="button" class="btn btn-primary m-1">
+                            Добавить вариант
+                        </button>
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button id="edit-vote-cancel" type="button" class="btn btn-secondary" data-dismiss="modal">
+                        Отменить
+                    </button>
+
+                    <button id="edit-vote-edit" type="button" class="btn btn-primary" onclick="onEditVote()">
+                        Сохранить изменения
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container mt-5 mb-5">
+        <div class="row align-items-center text-center mb-3">
+            <div class="col-sm-9 col-md-7 col-lg-5 mx-auto">
+                <button type="button" class="btn btn-primary m-1" data-toggle="modal"
+                        data-target="#add-new-vote-modal">
+                    Создать новое голосование
+                </button>
+            </div>
+        </div>
+        <table class="table table-hover" style="text-align: center">
+            <thead>
+            <tr>
+                <th>#</th>
+                <th>Название голосования</th>
+                <th>Дата начала</th>
+                <th>Управление</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for item in items %}
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td><a href="/vote/{{ item.id }}">{{ item.title }}</a></td>
+                    <td>{{ item.start_at }}</td>
+                    <td style="text-align: center">
+                        <i id="edit" class="ml-1 fas fa-edit" style="cursor: pointer"
+                           onclick="onOpenEditVote({{ item.id }})"
+                           aria-hidden="true"></i>
+
+                        <i id="delete" class="ml-1 fas fa-trash-alt" onclick="onDeleteVote({{ item.id }})"
+                           style="cursor: pointer"
+                           aria-hidden="true"></i>
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endblock %}
+
+{% block extended_js %}
+    <script type="text/javascript">
+        let editId;
+
+        let variant_id = 2;
+        let edit_variant_id = 2;
+
+        function onAddVote() {
+            let data = new FormData();
+
+            /*$.each(swfFiles.concat(pngFiles), function (key, value) {
+                data.append(key, value);
+            });*/
+
+            const variants = $('input[name=variants\\[\\]]');
+
+            data.append("vote-title", $("#vote-title").val());
+            data.append("variants-count", variants.length.toString());
+
+            $.each(variants, function (key, value) {
+                data.append(key, $(value).val());
+            });
+
+            $.ajax({
+                url: '/vote/create/',
+                method: 'POST',
+                data: data,
+                cache: false,
+                dataType: 'json',
+                processData: false,
+                contentType: false
+            }).done(function (json) {
+                if (json.success) {
+                    location.reload()
+                } else {
+                    if (json.error !== undefined) {
+                        $("#error-text").text(json.error);
+                    } else {
+                        $("#error-text").text("Произошла неизвестная ошибка");
+                    }
+
+                    $("#error").css("display", "");
+
+                    $("#add-new-variant").css("disabled", false);
+                    $("#new-vote-cancel").css("disabled", false);
+                    $("#new-vote-add").css("disabled", false);
+                }
+            });
+        }
+
+        function onOpenEditVote(id) {
+            editId = id;
+            edit_variant_id = 2;
+
+            $.ajax({
+                url: '/vote/get/' + id,
+                method: 'POST',
+                cache: false,
+                dataType: 'json',
+                processData: false,
+                contentType: false
+            }).done(function (json) {
+                $("#edit-vote-title").val(json.title);
+
+                $("#edit-variants").empty();
+
+                $.each(json.variants, function (key, value) {
+                    const element = $(`<div class="form-group mb-2">
+    <div id="edit-variant-${key}" class="input-group">
+        <div class="input-group-prepend">
+            <div class="input-group-prepend">
+                <div class="input-group-text">
+                    <i class="fas fa-poll-h" aria-hidden="true"></i>
+                </div>
+            </div>
+        </div>
+
+        <input id="edit-variant-${key}-input" name="edit-variants[]" type="text" class="form-control"
+               placeholder="Название варианта">
+    </div>
+</div>`);
+
+                    if (key > 1) {
+                        element.find(`#edit-variant-${key}`).append(`<div class="input-group-append">
+            <button class="btn btn-danger" type="button" onclick="removeEditVariant(${key})"><i
+                    class="fas fa-times" aria-hidden="true"></i></button>
+        </div>`);
+                    }
+
+                    $("#edit-variants").append(element);
+                    $(`#edit-variant-${key}-input`).val(value.title)
+                });
+
+
+                $('#edit-vote-modal').modal("show");
+            });
+        }
+
+        function onEditVote() {
+            let data = new FormData();
+
+            /*$.each(swfFiles.concat(pngFiles), function (key, value) {
+                data.append(key, value);
+            });*/
+
+            const variants = $('input[name=edit-variants\\[\\]]');
+
+            data.append("vote-title", $("#edit-vote-title").val());
+            data.append("variants-count", variants.length.toString());
+
+            $.each(variants, function (key, value) {
+                data.append(key, $(value).val());
+            });
+
+            $.ajax({
+                url: '/vote/edit/' + editId,
+                method: 'POST',
+                data: data,
+                cache: false,
+                dataType: 'json',
+                processData: false,
+                contentType: false
+            }).done(function (json) {
+                if (json.success) {
+                    location.reload()
+                } else {
+                    if (json.error !== undefined) {
+                        $("#edit-error-text").text(json.error);
+                    } else {
+                        $("#edit-error-text").text("Произошла неизвестная ошибка");
+                    }
+
+                    $("#edit-error").css("display", "");
+
+                    $("#edit-add-new-variant").css("disabled", false);
+                    $("#edit-vote-cancel").css("disabled", false);
+                    $("#edit-vote-edit").css("disabled", false);
+                }
+            });
+        }
+
+        function onDeleteVote(id) {
+            $.ajax({
+                url: '/vote/delete/' + id,
+                method: 'POST',
+                cache: false,
+                dataType: 'json',
+                processData: false,
+                contentType: false
+            }).done(function (json) {
+                if (json.success) {
+                    location.reload()
+                }
+            });
+        }
+    </script>
+
+    <script type="text/javascript">
+        $(function () {
+            $('[data-toggle="tooltip"]').tooltip()
+        })
+    </script>
+
+    <script>
+        function removeVariant(id) {
+            $(`#variant-${id}`).remove()
+        }
+
+        function removeEditVariant(id) {
+            $(`#edit-variant-${id}`).remove()
+        }
+
+        $(document).ready(function () {
+            $("#add-new-variant").click(function () {
+                variant_id++;
+
+                const element = `<div class="form-group mb-2">
+    <div id="variant-${variant_id}" class="input-group">
+        <div class="input-group-prepend">
+            <div class="input-group-prepend">
+                <div class="input-group-text">
+                    <i class="fas fa-poll-h" aria-hidden="true"></i>
+                </div>
+            </div>
+        </div>
+
+        <input id="variant-${variant_id}-input" name="variants[]" type="text" class="form-control"
+               placeholder="Название варианта">
+
+        <div class="input-group-append">
+            <button class="btn btn-danger" type="button" onclick="removeVariant(${variant_id})"><i
+                    class="fas fa-times" aria-hidden="true"></i></button>
+        </div>
+    </div>
+</div>`;
+
+                $("#variants").append($(element));
+            });
+
+            $("#edit-add-new-variant").click(function () {
+                edit_variant_id++;
+
+                const element = `<div class="form-group mb-2">
+    <div id="edit-variant-${edit_variant_id}" class="input-group">
+        <div class="input-group-prepend">
+            <div class="input-group-prepend">
+                <div class="input-group-text">
+                    <i class="fas fa-poll-h" aria-hidden="true"></i>
+                </div>
+            </div>
+        </div>
+
+        <input id="edit-variant-${edit_variant_id}-input" name="edit-variants[]" type="text" class="form-control"
+               placeholder="Название варианта">
+
+        <div class="input-group-append">
+            <button class="btn btn-danger" type="button" onclick="removeEditVariant(${edit_variant_id})"><i
+                    class="fas fa-times" aria-hidden="true"></i></button>
+        </div>
+    </div>
+</div>`;
+
+                $("#edit-variants").append($(element));
+            })
+        });
+    </script>
+{% endblock %}
